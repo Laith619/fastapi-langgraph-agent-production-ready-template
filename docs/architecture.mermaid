@@ -1,0 +1,53 @@
+```mermaid
+graph TB
+    subgraph "Application Layer"
+        API[FastAPI Application]
+        LangGraph[LangGraph Agent]
+    end
+
+    subgraph "Observability Stack"
+        LangfuseUI[Langfuse UI]
+        LangfuseWorker[Langfuse Worker]
+        Prometheus[Prometheus]
+        Grafana[Grafana]
+    end
+
+    subgraph "Data Storage Layer"
+        Postgres[(PostgreSQL)]
+        ClickHouse[(ClickHouse)]
+        Redis[(Redis)]
+        MinIO[(MinIO)]
+    end
+
+    %% Application Layer Connections
+    API --> LangGraph
+    API --> Postgres
+    API --> Redis
+    API --> LangfuseUI
+
+    %% Observability Connections
+    LangfuseUI --> Postgres
+    LangfuseUI --> ClickHouse
+    LangfuseUI --> MinIO
+    LangfuseWorker --> Postgres
+    LangfuseWorker --> ClickHouse
+    LangfuseWorker --> MinIO
+    API --> Prometheus
+    Prometheus --> Grafana
+
+    %% Data Flow
+    LangGraph --> LangfuseUI
+    Redis --> API
+    MinIO --> LangfuseUI
+
+    %% Styling
+    classDef primary fill:#2196F3,stroke:#1976D2,color:white
+    classDef secondary fill:#4CAF50,stroke:#388E3C,color:white
+    classDef storage fill:#FF9800,stroke:#F57C00,color:white
+    classDef monitoring fill:#9C27B0,stroke:#7B1FA2,color:white
+
+    class API,LangGraph primary
+    class LangfuseUI,LangfuseWorker secondary
+    class Postgres,ClickHouse,Redis,MinIO storage
+    class Prometheus,Grafana monitoring
+``` 
